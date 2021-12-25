@@ -54,12 +54,12 @@ def get_config_details(readme):
 
     Note: Regex divided by multiline in order to pass lint.
     """
-    config = re.search(
-        "#[#\s]+(?:Configuring|Configuration)((.|\n)*?)" "```(yaml)?\n((.|\n)*?)\n```",
+    return re.search(
+        "#[#\s]+(?:Configuring|Configuration)((.|\n)*?)"
+        "```(yaml)?\n((.|\n)*?)\n```",
         readme,
         re.MULTILINE,
     )
-    return config
 
 
 def get_config_params(repo, readme):
@@ -78,11 +78,7 @@ def get_config_params(repo, readme):
     url = repo.html_url
     config = get_config_details(readme)
 
-    if config:
-        config_text = normalize(config.group(4))
-    else:
-        config_text = "- name: " + raw_name
-
+    config_text = normalize(config.group(4)) if config else "- name: " + raw_name
     return {
         "repo_type": repo_type,
         "raw_name": raw_name,

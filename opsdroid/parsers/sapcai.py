@@ -66,28 +66,27 @@ async def parse_sapcai(opsdroid, skills, message, config):
         if result:
             for skill in skills:
                 for matcher in skill.matchers:
-                    if "sapcai_intent" in matcher:
-                        if (
-                            matcher["sapcai_intent"]
-                            in result["results"]["intents"][0]["slug"]
+                    if "sapcai_intent" in matcher and (
+                        matcher["sapcai_intent"]
+                        in result["results"]["intents"][0]["slug"]
+                    ):
+                        message.sapcai = result
+                        for key, entity in (
+                            result["results"].get("entities", {}).items()
                         ):
-                            message.sapcai = result
-                            for key, entity in (
-                                result["results"].get("entities", {}).items()
-                            ):
-                                await message.update_entity(
-                                    key, entity[0]["raw"], entity[0]["confidence"]
-                                )
-                            _LOGGER.debug(
-                                _("Matched against skill %s"), skill.config["name"]
+                            await message.update_entity(
+                                key, entity[0]["raw"], entity[0]["confidence"]
                             )
+                        _LOGGER.debug(
+                            _("Matched against skill %s"), skill.config["name"]
+                        )
 
-                            matched_skills.append(
-                                {
-                                    "score": confidence,
-                                    "skill": skill,
-                                    "config": skill.config,
-                                    "message": message,
-                                }
-                            )
+                        matched_skills.append(
+                            {
+                                "score": confidence,
+                                "skill": skill,
+                                "config": skill.config,
+                                "message": message,
+                            }
+                        )
     return matched_skills

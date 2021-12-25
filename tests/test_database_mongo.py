@@ -28,8 +28,6 @@ class TestDatabaseBaseMongoClassAsync(asynctest.TestCase):
             await database.connect()
         except NotImplementedError:
             raise Exception
-        else:
-            pass
 
     async def test_get2(self):
         """test of mocked method get"""
@@ -65,7 +63,5 @@ class TestDatabaseBaseMongoClassAsync(asynctest.TestCase):
                 await database.put("test", {})
             except NotImplementedError:
                 raise Exception
-            else:
-                pass
         else:
             raise Exception

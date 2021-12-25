@@ -58,22 +58,21 @@ async def parse_witai(opsdroid, skills, message, config):
         if result:
             for skill in skills:
                 for matcher in skill.matchers:
-                    if "witai_intent" in matcher:
-                        if matcher["witai_intent"] in [
-                            i["value"] for i in result["entities"]["intent"]
-                        ]:
-                            message.witai = result
-                            for key, entity in result["entities"].items():
-                                if key != "intent":
-                                    await message.update_entity(
-                                        key, entity[0]["value"], entity[0]["confidence"]
-                                    )
-                            matched_skills.append(
-                                {
-                                    "score": confidence,
-                                    "skill": skill,
-                                    "config": skill.config,
-                                    "message": message,
-                                }
-                            )
+                    if "witai_intent" in matcher and matcher[
+                        "witai_intent"
+                    ] in [i["value"] for i in result["entities"]["intent"]]:
+                        message.witai = result
+                        for key, entity in result["entities"].items():
+                            if key != "intent":
+                                await message.update_entity(
+                                    key, entity[0]["value"], entity[0]["confidence"]
+                                )
+                        matched_skills.append(
+                            {
+                                "score": confidence,
+                                "skill": skill,
+                                "config": skill.config,
+                                "message": message,
+                            }
+                        )
     return matched_skills

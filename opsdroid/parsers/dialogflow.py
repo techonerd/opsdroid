@@ -66,31 +66,36 @@ async def parse_dialogflow(opsdroid, skills, message, config):
             for skill in skills:
                 for matcher in skill.matchers:
 
-                    if "dialogflow_action" in matcher or "dialogflow_intent" in matcher:
-                        if (
+                    if (
+                        "dialogflow_action" in matcher
+                        or "dialogflow_intent" in matcher
+                    ) and (
+                        (
                             "action" in result["result"]
                             and matcher["dialogflow_action"]
                             in result["result"]["action"]
-                        ) or (
+                        )
+                        or (
                             "intentName" in result["result"]
                             and matcher["dialogflow_intent"]
                             in result["result"]["intentName"]
+                        )
+                    ):
+                        message.dialogflow = result
+                        message.apiai = message.dialogflow
+                        for key, entity in (
+                            result["result"].get("parameters", {}).items()
                         ):
-                            message.dialogflow = result
-                            message.apiai = message.dialogflow
-                            for key, entity in (
-                                result["result"].get("parameters", {}).items()
-                            ):
-                                await message.update_entity(key, entity, None)
-                            _LOGGER.debug(
-                                _("Matched against skill %s"), skill.config["name"]
-                            )
-                            matched_skills.append(
-                                {
-                                    "score": result["result"]["score"],
-                                    "skill": skill,
-                                    "config": skill.config,
-                                    "message": message,
-                                }
-                            )
+                            await message.update_entity(key, entity, None)
+                        _LOGGER.debug(
+                            _("Matched against skill %s"), skill.config["name"]
+                        )
+                        matched_skills.append(
+                            {
+                                "score": result["result"]["score"],
+                                "skill": skill,
+                                "config": skill.config,
+                                "message": message,
+                            }
+                        )
     return matched_skills

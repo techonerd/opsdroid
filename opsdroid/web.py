@@ -44,10 +44,7 @@ class Web:
         try:
             port = self.config["port"]
         except KeyError:
-            if self.get_ssl_context is not None:
-                port = 8443
-            else:
-                port = 8080
+            port = 8443 if self.get_ssl_context is not None else 8080
         return port
 
     @property

@@ -236,21 +236,25 @@ class TestLoader(unittest.TestCase):
         self.assertIn("test", ld.Loader.build_module_install_path(loader, config))
 
     def test_check_cache_removes_dir(self):
-        config = {}
-        config["no-cache"] = True
-        config["install_path"] = os.path.join(
-            self._tmp_dir, os.path.normpath("test/module")
-        )
+        config = {
+            'no-cache': True,
+            'install_path': os.path.join(
+                self._tmp_dir, os.path.normpath("test/module")
+            ),
+        }
+
         os.makedirs(config["install_path"], mode=0o777)
         ld.Loader.check_cache(config)
         self.assertFalse(os.path.isdir(config["install_path"]))
 
     def test_check_cache_removes_file(self):
-        config = {}
-        config["no-cache"] = True
-        config["install_path"] = os.path.join(
-            self._tmp_dir, os.path.normpath("test/module/test")
-        )
+        config = {
+            'no-cache': True,
+            'install_path': os.path.join(
+                self._tmp_dir, os.path.normpath("test/module/test")
+            ),
+        }
+
         directory, _ = os.path.split(config["install_path"])
         os.makedirs(directory, mode=0o777)
         open(config["install_path"] + ".py", "w")
@@ -259,22 +263,26 @@ class TestLoader(unittest.TestCase):
         shutil.rmtree(directory, onerror=del_rw)
 
     def test_check_cache_leaves(self):
-        config = {}
-        config["no-cache"] = False
-        config["install_path"] = os.path.join(
-            self._tmp_dir, os.path.normpath("test/module")
-        )
+        config = {
+            'no-cache': False,
+            'install_path': os.path.join(
+                self._tmp_dir, os.path.normpath("test/module")
+            ),
+        }
+
         os.makedirs(config["install_path"], mode=0o777)
         ld.Loader.check_cache(config)
         self.assertTrue(os.path.isdir(config["install_path"]))
         shutil.rmtree(config["install_path"], onerror=del_rw)
 
     def test_loading_intents(self):
-        config = {}
-        config["no-cache"] = True
-        config["install_path"] = os.path.join(
-            self._tmp_dir, os.path.normpath("test/module/test")
-        )
+        config = {
+            'no-cache': True,
+            'install_path': os.path.join(
+                self._tmp_dir, os.path.normpath("test/module/test")
+            ),
+        }
+
         os.makedirs(config["install_path"], mode=0o777)
         intent_contents = "Hello world"
         intents_file = os.path.join(config["install_path"], "intents.yml")
@@ -285,20 +293,20 @@ class TestLoader(unittest.TestCase):
         shutil.rmtree(config["install_path"], onerror=del_rw)
 
     def test_loading_intents_failed(self):
-        config = {}
-        config["no-cache"] = True
-        config["install_path"] = os.path.join(
-            self._tmp_dir, os.path.normpath("test/module/test/")
-        )
+        config = {
+            'no-cache': True,
+            'install_path': os.path.join(
+                self._tmp_dir, os.path.normpath("test/module/test/")
+            ),
+        }
+
         loaded_intents = ld.Loader._load_intents(config)
         self.assertEqual(None, loaded_intents)
 
     def test_no_dep(self):
         opsdroid, loader = self.setup()
 
-        config = {}
-        config["no-dep"] = True
-
+        config = {'no-dep': True}
         loader._install_module_dependencies(config)
         self.assertLogs("_LOGGER", "debug")
         self.assertEqual(loader._install_module_dependencies(config), None)
@@ -309,61 +317,40 @@ class TestLoader(unittest.TestCase):
 
     def test_no_req_in_install_module_dependencies(self):
         opsdroid, loader = self.setup()
-        config = {}
-        config["install_path"] = ""
-
+        config = {'install_path': ''}
         with mock.patch("os.path.isfile") as file:
             file.return_value = False
             self.assertEqual(loader._install_module_dependencies(config), None)
 
     def test_import_module(self):
-        config = {}
-        config["module_path"] = "os"
-        config["name"] = "path"
-        config["type"] = "system"
-        config["module"] = ""
-
+        config = {'module_path': 'os', 'name': 'path', 'type': 'system', 'module': ''}
         module = ld.Loader.import_module(config)
         self.assertIsInstance(module, ModuleType)
 
     def test_import_module_new(self):
-        config = {}
-        config["module_path"] = "os"
-        config["name"] = ""
-        config["type"] = "system"
-        config["module"] = ""
-
+        config = {'module_path': 'os', 'name': '', 'type': 'system', 'module': ''}
         module = ld.Loader.import_module(config)
         self.assertIsInstance(module, ModuleType)
 
     def test_import_module_failure(self):
-        config = {}
-        config["module_path"] = "nonexistant"
-        config["name"] = "module"
-        config["type"] = "broken"
-        config["module"] = ""
+        config = {
+            'module_path': 'nonexistant',
+            'name': 'module',
+            'type': 'broken',
+            'module': '',
+        }
 
         module = ld.Loader.import_module(config)
         self.assertEqual(module, None)
 
     def test_import_module_from_path(self):
-        config = {}
-        config["module_path"] = ""
-        config["name"] = "module"
-        config["type"] = ""
-        config["module"] = "os.path"
-
+        config = {'module_path': '', 'name': 'module', 'type': '', 'module': 'os.path'}
         module = ld.Loader.import_module(config)
         self.assertIsInstance(module, ModuleType)
 
     def test_import_module_from_entrypoint(self):
 
-        config = {}
-        config["module_path"] = ""
-        config["name"] = "myep"
-        config["type"] = ""
-        config["module"] = ""
-
+        config = {'module_path': '', 'name': 'myep', 'type': '', 'module': ''}
         distro = pkg_resources.Distribution()
         ep = pkg_resources.EntryPoint("myep", "os.path", dist=distro)
         config["entrypoint"] = ep
@@ -381,8 +368,7 @@ class TestLoader(unittest.TestCase):
         opsdroid, loader = self.setup()
         loader._load_modules = mock.MagicMock()
         loader._setup_modules = mock.MagicMock()
-        config = {}
-        config["databases"] = mock.MagicMock()
+        config = {'databases': mock.MagicMock()}
         config["skills"] = mock.MagicMock()
         config["connectors"] = mock.MagicMock()
         config["module-path"] = os.path.join(self._tmp_dir, "opsdroid")
@@ -543,15 +529,14 @@ class TestLoader(unittest.TestCase):
         opsdroid, loader = self.setup()
         repo_path = os.path.join(self._tmp_dir, "testrepo")
         config = {
-            "name": "testmodule",
-            "install_path": repo_path,
-            "repo": "https://github.com/rmccue/test-repository.git",
-            "branch": "master",
+            'name': 'testmodule',
+            'branch': 'master',
+            'repo': repo_path,
+            'install_path': os.path.join(
+                self._tmp_dir, "test_specific_local_module"
+            ),
         }
-        config["repo"] = repo_path
-        config["install_path"] = os.path.join(
-            self._tmp_dir, "test_specific_local_module"
-        )
+
         os.makedirs(repo_path)
         with mock.patch("opsdroid.loader._LOGGER.debug"), mock.patch.object(
             loader, "git_clone"

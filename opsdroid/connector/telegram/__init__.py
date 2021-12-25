@@ -75,14 +75,11 @@ class ConnectorTelegram(Connector):
         """
         user_id = response["message"]["from"]["id"]
 
-        if (
+        return (
             not self.whitelisted_users
             or user in self.whitelisted_users
             or user_id in self.whitelisted_users
-        ):
-            return True
-
-        return False
+        )
 
     def build_url(self, method):
         """Build the url to connect to the API.
@@ -261,9 +258,7 @@ class ConnectorTelegram(Connector):
         """
         _LOGGER.debug("Responding with: %s", message.text)
 
-        data = dict()
-        data["chat_id"] = message.target["id"]
-        data["text"] = message.text
+        data = {'chat_id': message.target["id"], 'text': message.text}
         resp = await self.session.post(self.build_url("sendMessage"), data=data)
         if resp.status == 200:
             _LOGGER.debug("Successfully responded")
