@@ -208,20 +208,22 @@ async def parse_rasanlu(opsdroid, skills, message, config):
     if result:
         for skill in skills:
             for matcher in skill.matchers:
-                if "rasanlu_intent" in matcher:
-                    if matcher["rasanlu_intent"] == result["intent"]["name"]:
-                        message.rasanlu = result
-                        for entity in result["entities"]:
-                            await message.update_entity(
-                                entity["entity"], entity["value"], entity["confidence"]
-                            )
-                        matched_skills.append(
-                            {
-                                "score": confidence,
-                                "skill": skill,
-                                "config": skill.config,
-                                "message": message,
-                            }
+                if (
+                    "rasanlu_intent" in matcher
+                    and matcher["rasanlu_intent"] == result["intent"]["name"]
+                ):
+                    message.rasanlu = result
+                    for entity in result["entities"]:
+                        await message.update_entity(
+                            entity["entity"], entity["value"], entity["confidence"]
                         )
+                    matched_skills.append(
+                        {
+                            "score": confidence,
+                            "skill": skill,
+                            "config": skill.config,
+                            "message": message,
+                        }
+                    )
 
     return matched_skills

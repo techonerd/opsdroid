@@ -284,8 +284,7 @@ class Loader:
         intent_file = os.path.join(config["install_path"], "intents.yml")
         if os.path.isfile(intent_file):
             with open(intent_file, "r") as intent_file_handle:
-                intents = intent_file_handle.read()
-                return intents
+                return intent_file_handle.read()
         else:
             return None
 
@@ -482,18 +481,13 @@ class Loader:
             # We might load from a configuration file an item that is just
             # a string, rather than a mapping object
             if not isinstance(config, Mapping):
-                config = {}
-                config["name"] = module
-                config["module"] = ""
+                config = {'name': module, 'module': ''}
             else:
                 config["name"] = module["name"]
                 config["module"] = module.get("module", "")
             config["type"] = modules_type
             config["is_builtin"] = self.is_builtin_module(config)
-            if config["name"] in entry_points:
-                config["entrypoint"] = entry_points[config["name"]]
-            else:
-                config["entrypoint"] = None
+            config["entrypoint"] = entry_points.get(config["name"])
             config["module_path"] = self.build_module_import_path(config)
             config["install_path"] = self.build_module_install_path(config)
             if "branch" not in config:
@@ -621,12 +615,11 @@ class Loader:
             _LOGGER.info(_("Cloning %s from remote repository"), config["name"])
             key_path = config.get("key_path", None)
             self.git_clone(git_url, config["install_path"], config["branch"], key_path)
+        elif os.path.isdir(git_url):
+            _LOGGER.debug(_("Cloning %s from local repository"), config["name"])
+            self.git_clone(git_url, config["install_path"], config["branch"])
         else:
-            if os.path.isdir(git_url):
-                _LOGGER.debug(_("Cloning %s from local repository"), config["name"])
-                self.git_clone(git_url, config["install_path"], config["branch"])
-            else:
-                _LOGGER.error(_("Could not find local git repo %s"), git_url)
+            _LOGGER.error(_("Could not find local git repo %s"), git_url)
 
     @staticmethod
     def _install_local_module(config):

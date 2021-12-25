@@ -178,11 +178,13 @@ class RocketChat(Connector):
         """
         _LOGGER.debug("Responding with: %s", message.text)
 
-        data = {}
-        data["channel"] = message.target
-        data["alias"] = self.bot_name
-        data["text"] = message.text
-        data["avatar"] = ""
+        data = {
+            'channel': message.target,
+            'alias': self.bot_name,
+            'text': message.text,
+            'avatar': '',
+        }
+
         resp = await self.session.post(
             self.build_url("chat.postMessage"), headers=self.headers, data=data
         )

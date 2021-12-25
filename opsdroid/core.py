@@ -60,10 +60,7 @@ class OpsDroid:
         self.modules = {}
         self.cron_task = None
         self.loader = Loader(self)
-        if config is None:
-            self.config = {}
-        else:
-            self.config = config
+        self.config = {} if config is None else config
         self.stats = {
             "messages_parsed": 0,
             "webhooks_called": 0,
@@ -362,9 +359,7 @@ class OpsDroid:
             _LOGGER.debug(_("Processing parsers..."))
             parsers = self.config["parsers"] or []
 
-            dialogflow = [
-                p for p in parsers if p["name"] == "dialogflow" or p["name"] == "apiai"
-            ]
+            dialogflow = [p for p in parsers if p["name"] in ["dialogflow", "apiai"]]
 
             # Show deprecation message but  parse message
             # Once it stops working remove this bit

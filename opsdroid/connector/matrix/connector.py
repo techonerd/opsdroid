@@ -181,8 +181,7 @@ class ConnectorMatrix(Connector):
         clean_html = clean(message)
 
         return {
-            # Strip out any tags from the markdown to make the body
-            "body": body if body else re.sub("<[^<]+?>", "", clean_html),
+            "body": body or re.sub("<[^<]+?>", "", clean_html),
             "msgtype": msgtype,
             "format": "org.matrix.custom.html",
             "formatted_body": clean_html,

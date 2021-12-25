@@ -19,7 +19,7 @@ api_string = "matrix_api_async.AsyncHTTPAPI.{}"
 
 def setup_connector():
     """Initiate a basic connector setup for testing on"""
-    connector = ConnectorMatrix(
+    return ConnectorMatrix(
         {
             "room": "#test:localhost",
             "mxid": "@opsdroid:localhost",
@@ -27,7 +27,6 @@ def setup_connector():
             "homeserver": "http://localhost:8008",
         }
     )
-    return connector
 
 
 class TestConnectorMatrixAsync(asynctest.TestCase):

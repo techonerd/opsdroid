@@ -439,11 +439,12 @@ class TestCoreAsync(asynctest.TestCase):
         with OpsDroid() as opsdroid:
             opsdroid.start_connectors([])
 
-            module = {}
-            module["config"] = {}
-            module["module"] = importlib.import_module(
-                "tests.mockmodules.connectors.connector_mocked"
-            )
+            module = {
+                'config': {},
+                'module': importlib.import_module(
+                    "tests.mockmodules.connectors.connector_mocked"
+                ),
+            }
 
             try:
                 await opsdroid.start_connectors([module])
@@ -459,11 +460,12 @@ class TestCoreAsync(asynctest.TestCase):
         with OpsDroid() as opsdroid:
             opsdroid.start_connectors([])
 
-            module = {}
-            module["config"] = {}
-            module["module"] = importlib.import_module(
-                "tests.mockmodules.connectors.connector_bare"
-            )
+            module = {
+                'config': {},
+                'module': importlib.import_module(
+                    "tests.mockmodules.connectors.connector_bare"
+                ),
+            }
 
             with self.assertRaises(NotImplementedError):
                 await opsdroid.start_connectors([module])
@@ -476,11 +478,13 @@ class TestCoreAsync(asynctest.TestCase):
     async def test_start_databases(self):
         with OpsDroid() as opsdroid:
             await opsdroid.start_databases([])
-            module = {}
-            module["config"] = {}
-            module["module"] = importlib.import_module(
-                "tests.mockmodules.databases.database"
-            )
+            module = {
+                'config': {},
+                'module': importlib.import_module(
+                    "tests.mockmodules.databases.database"
+                ),
+            }
+
             with self.assertRaises(NotImplementedError):
                 await opsdroid.start_databases([module])
                 self.assertEqual(1, len(opsdroid.memory.databases))
